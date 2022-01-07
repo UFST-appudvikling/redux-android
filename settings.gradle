@@ -1,0 +1,2 @@
+include ':arch'
+rootProject.name = "Android Redux Arch"

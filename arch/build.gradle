@@ -1,0 +1,43 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 31
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 31
+        versionCode 1
+        versionName "0.0.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.31'
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_version"
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    implementation "junit:junit:4.13.1"
+    testImplementation "junit:junit:4.13.1"
+
+    implementation "androidx.arch.core:core-common:2.1.0"
+    implementation "androidx.arch.core:core-runtime:2.1.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+}
