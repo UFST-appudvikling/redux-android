@@ -26,6 +26,17 @@ android {
         jvmTarget = "1.8"
         allWarningsAsErrors = true
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.0-rc02"
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -33,6 +44,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
     //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_version"
     implementation "com.jakewharton.timber:timber:${versions.timber}"
+    implementation "androidx.compose.runtime:runtime:${versions.compose}"
 
     implementation "junit:junit:${versions.junit}"
     testImplementation "junit:junit:${versions.junit}"
@@ -41,4 +53,9 @@ dependencies {
     implementation "androidx.arch.core:core-runtime:${versions.archCore}"
     implementation "androidx.lifecycle:lifecycle-livedata-core-ktx:${versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
+
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${versions.compose}")
+
+    testImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose}"
+    testImplementation "org.robolectric:robolectric:4.7.3"
 }
