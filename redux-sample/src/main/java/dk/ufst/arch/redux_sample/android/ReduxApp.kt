@@ -1,4 +1,4 @@
-package dk.ufst.arch.redux_sample.domain
+package dk.ufst.arch.redux_sample.android
 
 import androidx.navigation.NavController
 import dk.ufst.arch.*
@@ -8,8 +8,9 @@ import dk.ufst.arch.redux_sample.domain.contacts.contactsReducer
 import dk.ufst.arch.redux_sample.domain.messages.MessagesEnvironment
 import dk.ufst.arch.redux_sample.domain.messages.MessagesState
 import dk.ufst.arch.redux_sample.domain.messages.messagesReducer
-import dk.ufst.arch.redux_sample.navigation
-
+import dk.ufst.arch.redux_sample.domain.environment.ApiClient
+import dk.ufst.arch.redux_sample.domain.environment.ApiClientMock
+import dk.ufst.arch.redux_sample.domain.environment.NavigationClient
 
 data class AppState(
     var contactsState: ContactsState = ContactsState(),
@@ -17,14 +18,16 @@ data class AppState(
 )
 
 class AppEnvironment(
-    var contacts: ContactsEnvironment = ContactsEnvironment(),
-    var messages: MessagesEnvironment = MessagesEnvironment()
+    apiClient: ApiClient,
+    navigationClient: NavigationClient,
+    var contacts: ContactsEnvironment = ContactsEnvironment(apiClient, navigationClient),
+    var messages: MessagesEnvironment = MessagesEnvironment(apiClient, navigationClient)
 )
 
-object Redux {
-    lateinit var appStore : GlobalStore<AppState, AppAction, AppEnvironment>
-    lateinit var appEnvironment: AppEnvironment
-    lateinit var appState: AppState
+object ReduxApp {
+    lateinit var store : GlobalStore<AppState, AppAction, AppEnvironment>
+    lateinit var environment: AppEnvironment
+    lateinit var state: AppState
     private var initialized = false
 
     private val appReducer = combine<AppState, AppAction, AppEnvironment>(
@@ -42,13 +45,12 @@ object Redux {
         )
     )
 
-    private fun setupStore(env: AppEnvironment, appState: AppState, navController: NavController) =
+    private fun setupStore(env: AppEnvironment, appState: AppState) =
         GlobalStore(
             env = env,
             executor = ThreadExecutor(),
             reducer = compose(
                 appReducer,
-                navigation(navController)
             ),
             initialValue = appState,
             copyValue = { state: AppState -> state.copy() }
@@ -58,9 +60,9 @@ object Redux {
     // in shared prefs for instance
     fun init(navController: NavController) {
         if(!initialized) {
-            appEnvironment = AppEnvironment()
-            appState = AppState()
-            appStore = setupStore(appEnvironment, appState, navController)
+            environment = AppEnvironment(ApiClientMock(), ComposeNavigationClient(navController))
+            state = AppState()
+            store = setupStore(environment, state)
             initialized = true
         }
     }

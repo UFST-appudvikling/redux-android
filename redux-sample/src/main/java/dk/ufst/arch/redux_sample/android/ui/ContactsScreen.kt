@@ -1,10 +1,10 @@
-package dk.ufst.arch.redux_sample.ui
+package dk.ufst.arch.redux_sample.android.ui
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import dk.ufst.arch.redux_sample.Contact
-import dk.ufst.arch.redux_sample.mockData
+import dk.ufst.arch.redux_sample.domain.environment.Contact
+import dk.ufst.arch.redux_sample.domain.environment.mockData
 
 @Composable
 fun ContactsScreen(

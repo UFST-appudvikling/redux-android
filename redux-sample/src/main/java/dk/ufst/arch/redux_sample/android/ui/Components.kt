@@ -1,4 +1,4 @@
-package dk.ufst.arch.redux_sample.ui
+package dk.ufst.arch.redux_sample.android.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import dk.ufst.arch.redux_sample.Contact
+import dk.ufst.arch.redux_sample.domain.environment.Contact
 import dk.ufst.arch.redux_sample.R
 
 @Composable

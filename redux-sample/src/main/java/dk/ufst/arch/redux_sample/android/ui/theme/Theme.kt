@@ -1,4 +1,4 @@
-package dk.ufst.arch.redux_sample.ui.theme
+package dk.ufst.arch.redux_sample.android.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

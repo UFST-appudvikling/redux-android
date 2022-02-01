@@ -1,4 +1,4 @@
-package dk.ufst.arch.redux_sample
+package dk.ufst.arch.redux_sample.domain.environment
 
 data class Message(val text: String)
 data class Contact(val name: String, val phone: String, val messages : List<Message>)

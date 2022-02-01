@@ -1,4 +1,4 @@
-package dk.ufst.arch.redux_sample.ui
+package dk.ufst.arch.redux_sample.android.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -9,19 +9,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import dk.ufst.arch.AppAction
 import dk.ufst.arch.ComposeLocalStore
 import dk.ufst.arch.GlobalStore
-import dk.ufst.arch.redux_sample.Contact
-import dk.ufst.arch.redux_sample.domain.AppEnvironment
-import dk.ufst.arch.redux_sample.domain.AppState
+import dk.ufst.arch.redux_sample.android.AppEnvironment
+import dk.ufst.arch.redux_sample.android.AppState
 import dk.ufst.arch.redux_sample.domain.contacts.ContactsAction
 import dk.ufst.arch.redux_sample.domain.contacts.ContactsState
 import dk.ufst.arch.redux_sample.domain.messages.MessagesAction
 import dk.ufst.arch.redux_sample.domain.messages.MessagesState
-import dk.ufst.arch.redux_sample.mockData
-import dk.ufst.arch.redux_sample.ui.theme.SampleTheme
+import dk.ufst.arch.redux_sample.domain.environment.mockData
+import dk.ufst.arch.redux_sample.android.ui.theme.SampleTheme
+import dk.ufst.arch.redux_sample.domain.environment.NavigationDestination
 import dk.ufst.arch.rememberLocalStore
 
 @Composable
@@ -44,15 +43,15 @@ fun SampleApp(navController: NavHostController, globalStore: GlobalStore<AppStat
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = Screens.Contacts.name,
+                startDestination = NavigationDestination.Contacts.name,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable(Screens.Contacts.name) {
+                composable(NavigationDestination.Contacts.name) {
                     ContactsScreen(contacts = contactsStore.state.value.contacts, onItemClick = { contact ->
                         contactsStore.send(ContactsAction.ContactTapped(contact))
                     })
                 }
-                composable(Screens.Messages.name) {
+                composable(NavigationDestination.Messages.name) {
                     MessagesScreen(mockData[0])
                 }
             }

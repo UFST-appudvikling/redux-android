@@ -1,11 +1,10 @@
-package dk.ufst.arch.redux_sample
+package dk.ufst.arch.redux_sample.android
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
-import dk.ufst.arch.redux_sample.domain.Redux
-import dk.ufst.arch.redux_sample.ui.SampleApp
+import dk.ufst.arch.redux_sample.android.ui.SampleApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,8 +12,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            Redux.init(navController)
-            SampleApp(navController, Redux.appStore)
+            ReduxApp.init(navController)
+            SampleApp(navController, ReduxApp.store)
         }
     }
 }
