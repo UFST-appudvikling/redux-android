@@ -1,7 +1,11 @@
 package dk.ufst.arch.redux_sample.domain.environment
 
-data class Message(val text: String)
-data class Contact(val name: String, val phone: String, val messages : List<Message>)
+data class Message(val text: String = "")
+data class Contact(
+    val name: String = "",
+    val phone: String = "",
+    val messages : List<Message> = emptyList()
+)
 
 
 val mockData = listOf(

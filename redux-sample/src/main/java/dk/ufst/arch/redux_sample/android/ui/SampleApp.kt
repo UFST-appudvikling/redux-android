@@ -47,12 +47,19 @@ fun SampleApp(navController: NavHostController, globalStore: GlobalStore<AppStat
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(NavigationDestination.Contacts.name) {
-                    ContactsScreen(contacts = contactsStore.state.value.contacts, onItemClick = { contact ->
-                        contactsStore.send(ContactsAction.ContactTapped(contact))
-                    })
+                    ContactsScreen(
+                        contacts = contactsStore.state.value.contacts,
+                        onInit = {
+                            contactsStore.send(ContactsAction.Init)
+                        },
+                        onItemClick = { contact ->
+                            contactsStore.send(ContactsAction.ContactTapped(contact))
+                        }
+                    )
                 }
                 composable(NavigationDestination.Messages.name) {
-                    MessagesScreen(mockData[0])
+
+                    MessagesScreen(messagesStore.state.value.contact!!)
                 }
             }
         }

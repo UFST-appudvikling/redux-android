@@ -6,7 +6,7 @@ enum class NavigationDestination {
 }
 
 sealed class NavigationArg {
-    data class Messages(val contact: Contact) : NavigationArg()
+    data class MessagesArg(val contact: Contact) : NavigationArg()
 }
 
 interface NavigationClient {
