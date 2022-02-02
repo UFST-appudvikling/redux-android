@@ -1,5 +1,6 @@
 package dk.ufst.arch.redux_sample.domain.messages
 
+import android.util.Log
 import dk.ufst.arch.AppAction
 import dk.ufst.arch.Effect
 import dk.ufst.arch.redux_sample.domain.environment.*
@@ -26,7 +27,7 @@ fun messagesReducer(
     when(action) {
         MessagesAction.Back -> {}
         MessagesAction.Init -> {
-            env.navigationClient.getArgument()?.let {
+            env.navigationClient.getArgument(NavigationDestination.Messages.name)?.let {
                 if(it is NavigationArg.MessagesArg) {
                     state.contact = it.contact
                 }

@@ -10,7 +10,11 @@ data class Contact(
 
 val mockData = listOf(
     Contact(name = "Charlie Testburger", phone = "11111111",
-        listOf(Message("Hi dude"))
+        listOf(
+            Message("Hi dude"),
+            Message("How are you?"),
+            Message("Did you get my text?")
+        )
     ),
     Contact(name = "Meinke Dorfheimer", phone = "11111111",
         listOf(Message("Hi dude"))

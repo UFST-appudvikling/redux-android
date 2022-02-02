@@ -18,10 +18,10 @@ data class AppState(
 )
 
 class AppEnvironment(
-    apiClient: ApiClient,
-    navigationClient: NavigationClient,
-    var contacts: ContactsEnvironment = ContactsEnvironment(apiClient, navigationClient),
-    var messages: MessagesEnvironment = MessagesEnvironment(apiClient, navigationClient)
+    val apiClient: ApiClient,
+    val navigationClient: NavigationClient,
+    val contacts: ContactsEnvironment = ContactsEnvironment(apiClient, navigationClient),
+    val messages: MessagesEnvironment = MessagesEnvironment(apiClient, navigationClient)
 )
 
 object ReduxApp {
