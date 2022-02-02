@@ -43,7 +43,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     implementation "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
     //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_version"
-    implementation "com.jakewharton.timber:timber:${versions.timber}"
     implementation "androidx.compose.runtime:runtime:${versions.compose}"
 
     implementation "junit:junit:${versions.junit}"
