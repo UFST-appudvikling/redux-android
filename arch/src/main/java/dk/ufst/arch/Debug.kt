@@ -1,6 +1,6 @@
 package dk.ufst.arch
 
-import timber.log.Timber
+import android.util.Log
 import kotlin.math.min
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
@@ -9,6 +9,9 @@ const val MAX_LOG_LENGTH = 1000
 const val LOG_TAG = "ReduxArch"
 
 fun log(message: String) {
+    if(!ReduxAndroid.debugMode) {
+        return
+    }
     // Split by line, then ensure each line can fit into Log's maximum length. Borrowed from OkHttp
     // Additional lines get indented
     var i = 0
@@ -18,11 +21,10 @@ fun log(message: String) {
         newline = if (newline != -1) newline else length
         do {
             val end = min(newline, i + MAX_LOG_LENGTH)
-            Timber.tag(LOG_TAG)
             if(i > 0) {
-                Timber.d("\t\t${message.substring(i, end)}")
+                Log.d(LOG_TAG, "\t\t${message.substring(i, end)}")
             } else {
-                Timber.d(message.substring(i, end))
+                Log.d(LOG_TAG, message.substring(i, end))
             }
             i = end
         } while (i < newline)
@@ -39,6 +41,9 @@ fun log(message: String) {
  */
 @Suppress("UNCHECKED_CAST")
 fun logStateDiff(state1: Any, state2: Any) {
+    if(!ReduxAndroid.debugMode) {
+        return
+    }
     log("State update for ${state1::class.simpleName}:")
     // I cannot get rid of the unchecked cast warning but it shouldn't matter since we're getting
     // the class object from the same instance we pass to get(property)
