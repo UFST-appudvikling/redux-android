@@ -77,9 +77,7 @@ fun ContactCard(contact: Contact, onItemClick: (contact: Contact)->Unit = {}) {
                 painter = painterResource(R.drawable.android_logo),
                 contentDescription = "Contact Picture",
                 modifier = Modifier
-                    // Set image size to 40 dp
                     .size(64.dp)
-                    // Clip image to be shaped as a circle
                     .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(8.dp))
