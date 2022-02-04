@@ -26,7 +26,6 @@ fun messagesReducer(
     when(action) {
         MessagesAction.Back -> {}
         MessagesAction.Init -> {
-            Thread.sleep(3000L)
             env.navigationClient.getArgument(NavigationDestination.Messages.name)?.let {
                 if(it is NavigationArg.MessagesArg) {
                     state.contact = it.contact

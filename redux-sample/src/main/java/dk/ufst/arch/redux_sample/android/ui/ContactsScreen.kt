@@ -41,12 +41,13 @@ fun ContactsScreen(
         { it.contactsState.copy() }
     )
 
+    //val state = store.observeState()
 
-    if(store.state.value.contacts.isEmpty()) {
+    //if(state.value.contacts.isEmpty()) {
         LaunchedEffect(true) {
             store.send(ContactsAction.LoadContacts)
         }
-    }
+    //}
 
     store.state.value.error.consume {
         onShowMessage(it)

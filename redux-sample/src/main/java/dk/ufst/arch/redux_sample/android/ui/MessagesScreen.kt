@@ -18,9 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dk.ufst.arch.AppAction
-import dk.ufst.arch.ComposeLocalStore
-import dk.ufst.arch.GlobalStore
+import dk.ufst.arch.*
 import dk.ufst.arch.redux_sample.R
 import dk.ufst.arch.redux_sample.android.AppEnvironment
 import dk.ufst.arch.redux_sample.android.AppState
@@ -28,7 +26,6 @@ import dk.ufst.arch.redux_sample.domain.environment.Message
 import dk.ufst.arch.redux_sample.domain.environment.mockData
 import dk.ufst.arch.redux_sample.domain.messages.MessagesAction
 import dk.ufst.arch.redux_sample.domain.messages.MessagesState
-import dk.ufst.arch.rememberLocalStore
 
 @Composable
 fun MessagesScreen(globalStore: GlobalStore<AppState, AppAction, AppEnvironment>) {
