@@ -34,26 +34,20 @@ fun ContactsScreen(
     globalStore: GlobalStore<AppState, AppAction, AppEnvironment>,
     onShowMessage: (String)->Unit = {}) {
 
-    Log.e("DEBUG", "Composing ContactsScreen")
     val store: ComposeLocalStore<ContactsState, ContactsAction> = rememberLocalStore(
         globalStore,
         { it.contactsState.copy() },
         { it.contactsState.copy() }
     )
 
-    //val state = store.observeState()
-
-    //if(state.value.contacts.isEmpty()) {
-        LaunchedEffect(true) {
-            store.send(ContactsAction.LoadContacts)
-        }
-    //}
+    LaunchedEffect(true) {
+        store.send(ContactsAction.LoadContacts)
+    }
 
     store.state.value.error.consume {
         onShowMessage(it)
     }
 
-    //Hver get på state trigger en state update
     ContactList(
         contacts = store.state.value.contacts,
         onItemClick = { contact ->

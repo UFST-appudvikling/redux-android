@@ -30,8 +30,6 @@ import dk.ufst.arch.redux_sample.domain.messages.MessagesState
 @Composable
 fun MessagesScreen(globalStore: GlobalStore<AppState, AppAction, AppEnvironment>) {
 
-    Log.e("DEBUG", "Composing MessagesScreen")
-
     val store: ComposeLocalStore<MessagesState, MessagesAction> = rememberLocalStore(
         globalStore,
         { it.messagesState.copy() },
