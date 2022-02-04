@@ -1,6 +1,7 @@
 package dk.ufst.arch.redux_sample.android.ui
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,9 @@ import dk.ufst.arch.rememberLocalStore
 
 @Composable
 fun MessagesScreen(globalStore: GlobalStore<AppState, AppAction, AppEnvironment>) {
+
+    Log.e("DEBUG", "Composing MessagesScreen")
+
     val store: ComposeLocalStore<MessagesState, MessagesAction> = rememberLocalStore(
         globalStore,
         { it.messagesState.copy() },

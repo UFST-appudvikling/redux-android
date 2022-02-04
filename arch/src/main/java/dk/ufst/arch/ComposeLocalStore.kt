@@ -37,7 +37,6 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
 
                 return produceState(getInitialValue(globalStore.value)) {
                     val stateChanger: ((GlobalValue) -> Unit) = { globalValue: GlobalValue ->
-
                         val newLocalValue = getLocalCopy(globalValue)
                         // Only update value if the local state have changed.
                         if (prevLocalValue != newLocalValue) {

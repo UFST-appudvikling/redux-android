@@ -37,13 +37,10 @@ fun contactsReducer(
     when(action) {
         is ContactsAction.LoadContacts -> {
             Log.e("DEBUG", "Running LoadContacts")
-            if(state.contacts.isEmpty()) {
-                Log.e("DEBUG", "Actually loading contacts")
-                return singleEffect {
-                    env.apiClient.getContacts().fold(
-                        onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
-                        onFailure = { ex -> ContactsAction.OnError(ex) })
-                }
+            return singleEffect {
+                env.apiClient.getContacts().fold(
+                    onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
+                    onFailure = { ex -> ContactsAction.OnError(ex) })
             }
         }
         is ContactsAction.ContactsLoaded -> {

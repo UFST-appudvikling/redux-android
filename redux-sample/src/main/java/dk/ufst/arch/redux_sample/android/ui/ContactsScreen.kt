@@ -1,6 +1,7 @@
 package dk.ufst.arch.redux_sample.android.ui
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,11 +34,13 @@ fun ContactsScreen(
     globalStore: GlobalStore<AppState, AppAction, AppEnvironment>,
     onShowMessage: (String)->Unit = {}) {
 
+    Log.e("DEBUG", "Composing ContactsScreen")
     val store: ComposeLocalStore<ContactsState, ContactsAction> = rememberLocalStore(
         globalStore,
         { it.contactsState.copy() },
         { it.contactsState.copy() }
     )
+
 
     if(store.state.value.contacts.isEmpty()) {
         LaunchedEffect(true) {
@@ -49,6 +52,7 @@ fun ContactsScreen(
         onShowMessage(it)
     }
 
+    //Hver get på state trigger en state update
     ContactList(
         contacts = store.state.value.contacts,
         onItemClick = { contact ->
