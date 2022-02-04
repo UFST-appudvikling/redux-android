@@ -9,6 +9,7 @@ import dk.ufst.arch.singleEffect
 
 data class ContactsState(
     var contacts: List<Contact> = emptyList(),
+    var isLoading: Boolean = false,
     var error: SingleEvent<String>? = null
 )
 
@@ -36,7 +37,10 @@ fun contactsReducer(
 ): Array<Effect<ContactsAction>> {
     when(action) {
         is ContactsAction.LoadContacts -> {
-            Log.e("DEBUG", "Running LoadContacts")
+            // load silently if were refreshing
+            //if(state.contacts.isEmpty()) {
+                state.isLoading = true
+            //}
             return singleEffect {
                 env.apiClient.getContacts().fold(
                     onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
@@ -44,6 +48,7 @@ fun contactsReducer(
             }
         }
         is ContactsAction.ContactsLoaded -> {
+            state.isLoading = false
             state.contacts = action.contacts
         }
         is ContactsAction.ContactTapped -> {
