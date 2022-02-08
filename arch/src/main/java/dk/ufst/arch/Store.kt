@@ -23,10 +23,8 @@ open class GlobalStore<Value, Action, Environment>(
 
 
     fun sendAction(action: Action) {
-        if(BuildConfig.DEBUG) {
-            log("Dispatching action:")
-            log("\t${getActionDescription(action as Any)}")
-        }
+        log("Dispatching action:")
+        log("\t${getActionDescription(action as Any)}")
         // run on main thread
         executor.runOnUiThread {
             reduce(action, value)
@@ -40,6 +38,8 @@ open class GlobalStore<Value, Action, Environment>(
     fun desubscribe(subscriber: (Value) -> Unit) {
         subscriberList.remove(subscriber)
     }
+
+    fun getSubcriberCount() : Int = subscriberList.size
 
     private fun callSubscribers() {
         subscriberList.forEach { subscriber ->

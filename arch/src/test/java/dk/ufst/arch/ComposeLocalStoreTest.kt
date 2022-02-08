@@ -31,10 +31,8 @@ class ComposeLocalStoreTest {
 
         composeTestRule.setContent {
             val localStore: ComposeLocalStore<LocalState, Any> = rememberLocalStore(
-                globalStore,
-                { it.localState.copy() },
-                { it.localState.copy() }
-            )
+                globalStore
+            ) { it.localState.copy() }
 
             composedResults.add(localStore.state.value)
 
@@ -69,9 +67,7 @@ class ComposeLocalStoreTest {
         composeTestRule.setContent {
             val localStore: ComposeLocalStore<LocalState, Any> = rememberLocalStore(
                 globalStore,
-                { it.localState },
-                { it.localState }
-            )
+            ) { it.localState }
 
             composedResults.add(localStore.state.value)
 
@@ -95,6 +91,40 @@ class ComposeLocalStoreTest {
         }
     }
 
+    @Test
+    fun `Test only one subscription per ComposeLocalStore no matter how many state accesses`() {
+        // Signal an action sent from the Compose scope to the reducer.
+        val signalAction = Channel<Unit>(1)
+
+        composeTestRule.setContent {
+            val localStore: ComposeLocalStore<LocalState, Any> = rememberLocalStore(
+                globalStore
+            ) { it.localState.copy() }
+
+            // Access the state 2 times
+            localStore.state.value
+            localStore.state.value
+
+            val scope = rememberCoroutineScope()
+
+            // Wait for outside signal for when to sent an Action.
+            scope.launch {
+                signalAction.consumeEach {
+                    localStore.send(Any())
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            signalAction.trySend(Unit)
+        }
+
+        composeTestRule.runOnIdle {
+            // Make sure that only one subscription is created
+            assertEquals(1, globalStore.getSubcriberCount())
+        }
+    }
+
     private fun setupStore() {
         globalStore = GlobalStore(
             env = Any(),
@@ -108,9 +138,8 @@ class ComposeLocalStoreTest {
                     pullback(
                         localReducer,
                         AppState::localState::get,
-                        AppState::localState::set,
-                        { Any() }
-                    )
+                        AppState::localState::set
+                    ) { Any() }
                 )
             )
         )
