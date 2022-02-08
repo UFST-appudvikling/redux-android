@@ -1,27 +1,45 @@
 package dk.ufst.arch
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.State
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 
-/**
- * Implement RememberObserver interface which keeps us notified of when
- * were remembered or forgotten in the composition.
- *
- * This ensures that we subscribe once and get one update from the GlobalStore
- * even though the state is accessed several times in a composable
- */
-interface ComposeLocalStore<Value, Action> : RememberObserver {
+
+interface ComposeLocalStore<Value, Action> {
     val state: State<Value>
-        @Composable
-        get
     fun send(action: Action)
 }
 
 @Composable
 inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEnvironment> rememberLocalStore(
     globalStore: GlobalStore<GlobalValue, GlobalAction, GlobalEnvironment>,
-    crossinline getLocalCopy: @DisallowComposableCalls (GlobalValue) -> LocalValue,
-    crossinline getInitialValue: @DisallowComposableCalls (GlobalValue) -> LocalValue,
+    crossinline getLocalCopy: @DisallowComposableCalls (GlobalValue) -> LocalValue
 ): ComposeLocalStore<LocalValue, LocalAction> {
+    var prevLocalValue: LocalValue = remember { getLocalCopy(globalStore.value) }
+
+    val state = produceState(getLocalCopy(globalStore.value)) {
+        val stateChanger: ((GlobalValue) -> Unit) = { globalValue: GlobalValue ->
+
+            val newLocalValue = getLocalCopy(globalValue)
+            // Only update value if the local state have changed.
+            if (prevLocalValue != newLocalValue) {
+                if (BuildConfig.DEBUG) {
+                    logStateDiff(prevLocalValue!!, newLocalValue!!)
+                }
+                value = newLocalValue
+            }
+            prevLocalValue = newLocalValue
+        }
+
+        globalStore.subscribe(stateChanger)
+
+        awaitDispose {
+            globalStore.desubscribe(stateChanger)
+        }
+    }
+
     val localStore = remember {
         object : ComposeLocalStore<LocalValue, LocalAction> {
             override fun send(action: LocalAction) {
@@ -30,36 +48,7 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
                 }
             }
 
-            private var mutableState = mutableStateOf(getInitialValue(globalStore.value))
-            private var prevLocalValue: LocalValue = getInitialValue(globalStore.value)
-
-            private val stateChange: ((GlobalValue) -> Unit) = { globalValue: GlobalValue ->
-                val newLocalValue = getLocalCopy(globalValue)
-                // Only update value if the local state have changed.
-                if (prevLocalValue != newLocalValue) {
-                    if (BuildConfig.DEBUG) {
-                        logStateDiff(prevLocalValue!!, newLocalValue!!)
-                    }
-                    mutableState.value = newLocalValue
-                }
-                prevLocalValue = newLocalValue
-            }
-
-            override val state: State<LocalValue>
-                @Composable
-                get() = mutableState
-
-            override fun onAbandoned() {
-                globalStore.desubscribe(stateChange)
-            }
-
-            override fun onForgotten() {
-                globalStore.desubscribe(stateChange)
-            }
-
-            override fun onRemembered() {
-                globalStore.subscribe(stateChange)
-            }
+            override val state: State<LocalValue> = state
         }
     }
 

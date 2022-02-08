@@ -41,6 +41,8 @@ open class GlobalStore<Value, Action, Environment>(
         subscriberList.remove(subscriber)
     }
 
+    fun getSubcriberCount() : Int = subscriberList.size
+
     private fun callSubscribers() {
         subscriberList.forEach { subscriber ->
             subscriber(value)
