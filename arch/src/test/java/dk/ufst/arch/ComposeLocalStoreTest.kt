@@ -92,7 +92,7 @@ class ComposeLocalStoreTest {
     }
 
     @Test
-    fun `Test only one subscription per composable no matter how many state accesses`() {
+    fun `Test only one subscription per ComposeLocalStore no matter how many state accesses`() {
         // Signal an action sent from the Compose scope to the reducer.
         val signalAction = Channel<Unit>(1)
 
