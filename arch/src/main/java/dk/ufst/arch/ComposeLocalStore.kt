@@ -25,9 +25,7 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
             val newLocalValue = getLocalCopy(globalValue)
             // Only update value if the local state have changed.
             if (prevLocalValue != newLocalValue) {
-                if (BuildConfig.DEBUG) {
-                    logStateDiff(prevLocalValue!!, newLocalValue!!)
-                }
+                logStateDiff(prevLocalValue!!, newLocalValue!!)
                 value = newLocalValue
             }
             prevLocalValue = newLocalValue

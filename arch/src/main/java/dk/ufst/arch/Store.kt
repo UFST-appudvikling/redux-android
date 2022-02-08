@@ -23,10 +23,8 @@ open class GlobalStore<Value, Action, Environment>(
 
 
     fun sendAction(action: Action) {
-        if(BuildConfig.DEBUG) {
-            log("Dispatching action:")
-            log("\t${getActionDescription(action as Any)}")
-        }
+        log("Dispatching action:")
+        log("\t${getActionDescription(action as Any)}")
         // run on main thread
         executor.runOnUiThread {
             reduce(action, value)
