@@ -32,9 +32,7 @@ fun MessagesScreen(globalStore: GlobalStore<AppState, AppAction, AppEnvironment>
 
     val store: ComposeLocalStore<MessagesState, MessagesAction> = rememberLocalStore(
         globalStore,
-        { it.messagesState.copy() },
-        { it.messagesState.copy() }
-    )
+    ) { it.messagesState.copy() }
 
     LaunchedEffect(true) {
         store.send(MessagesAction.Init)

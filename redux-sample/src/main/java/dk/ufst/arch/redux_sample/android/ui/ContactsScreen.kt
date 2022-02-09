@@ -34,9 +34,7 @@ fun ContactsScreen(
 
     val store: ComposeLocalStore<ContactsState, ContactsAction> = rememberLocalStore(
         globalStore,
-        { it.contactsState.copy() },
-        { it.contactsState.copy() }
-    )
+    ) { it.contactsState.copy() }
 
     LaunchedEffect(true) {
         store.send(ContactsAction.LoadContacts)

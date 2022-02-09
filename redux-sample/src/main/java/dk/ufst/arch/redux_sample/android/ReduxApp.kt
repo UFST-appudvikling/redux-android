@@ -59,8 +59,8 @@ object ReduxApp {
     // Call from app or activity, pass parameters if different setup is required based values found
     // in shared prefs for instance
     fun init(navController: NavController) {
-        ReduxAndroid.debugMode = true
         if(!initialized) {
+            ReduxAndroid.init(BuildConfig.DEBUG)
             environment = AppEnvironment(ApiClientMock(), ComposeNavigationClient(navController))
             state = AppState()
             store = setupStore(environment, state)
