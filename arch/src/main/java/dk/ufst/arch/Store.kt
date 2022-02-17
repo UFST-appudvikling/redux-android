@@ -16,7 +16,6 @@ interface GlobalStore<Value, Action, Environment> {
     val value: Value
 }
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
 internal class GlobalStoreImpl<Value, Action, Environment>(
     private val env : Environment,
     private val executor: Executor,
@@ -69,9 +68,6 @@ internal class GlobalStoreImpl<Value, Action, Environment>(
             }
         }
     }
-
-    fun destroy() {}
-
 }
 
 fun <Value, Action, Environment> createGlobalStore(
