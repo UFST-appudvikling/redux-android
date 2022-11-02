@@ -1,9 +1,7 @@
 package dk.ufst.arch.redux_sample.android.ui
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,12 +23,14 @@ import dk.ufst.arch.redux_sample.android.AppState
 import dk.ufst.arch.redux_sample.domain.contacts.ContactsAction
 import dk.ufst.arch.redux_sample.domain.contacts.ContactsState
 import dk.ufst.arch.redux_sample.domain.environment.Contact
-import dk.ufst.arch.redux_sample.domain.environment.mockData
+import dk.ufst.arch.redux_sample.domain.environment.mockContacts
 
 @Composable
 fun ContactsScreen(
     globalStore: GlobalStore<AppState, AppAction, AppEnvironment>,
-    onShowMessage: (String)->Unit = {}) {
+    onGotoMessages: (String)->Unit,
+    onShowMessage: (String)->Unit = {},
+) {
 
     val store: ComposeLocalStore<ContactsState, ContactsAction> = rememberLocalStore(
         globalStore,
@@ -50,7 +50,7 @@ fun ContactsScreen(
         ContactList(
             contacts = store.state.value.contacts,
             onItemClick = { contact ->
-                store.send(ContactsAction.ContactTapped(contact))
+                onGotoMessages(contact.id)
             }
         )
     }
@@ -101,5 +101,5 @@ fun ContactCard(contact: Contact, onItemClick: (contact: Contact)->Unit = {}) {
 )
 @Composable
 fun ContactsPreview() {
-    ContactList(contacts = mockData)
+    ContactList(contacts = mockContacts)
 }

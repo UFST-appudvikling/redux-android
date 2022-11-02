@@ -22,7 +22,6 @@ sealed class ContactsAction : AppAction() {
 
 class ContactsEnvironment(
     val apiClient: ApiClient,
-    val navigationClient: NavigationClient
 )
 
 /**
@@ -37,10 +36,7 @@ fun contactsReducer(
 ): Array<Effect<ContactsAction>> {
     when(action) {
         is ContactsAction.LoadContacts -> {
-            // load silently if were refreshing
-            //if(state.contacts.isEmpty()) {
-                state.isLoading = true
-            //}
+            state.isLoading = true
             return singleEffect {
                 env.apiClient.getContacts().fold(
                     onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
@@ -52,7 +48,7 @@ fun contactsReducer(
             state.contacts = action.contacts
         }
         is ContactsAction.ContactTapped -> {
-            return env.navigationClient.navigateFx(NavigationDestination.Messages, NavigationArg.MessagesArg(action.contact))
+            //return env.navigationClient.navigateFx(NavigationDestination.Messages, NavigationArg.MessagesArg(action.contact))
         }
         is ContactsAction.OnError -> {
             // communicate the error back to the UI by updating the state

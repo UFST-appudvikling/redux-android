@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val state = rememberSampleAppState()
-            ReduxApp.init(state.navController)
+            ReduxApp.init()
             SampleApp(state, ReduxApp.store)
         }
     }

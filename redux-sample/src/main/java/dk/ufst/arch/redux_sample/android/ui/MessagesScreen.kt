@@ -1,7 +1,6 @@
 package dk.ufst.arch.redux_sample.android.ui
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,23 +22,25 @@ import dk.ufst.arch.redux_sample.R
 import dk.ufst.arch.redux_sample.android.AppEnvironment
 import dk.ufst.arch.redux_sample.android.AppState
 import dk.ufst.arch.redux_sample.domain.environment.Message
-import dk.ufst.arch.redux_sample.domain.environment.mockData
+import dk.ufst.arch.redux_sample.domain.environment.mockContacts
+import dk.ufst.arch.redux_sample.domain.environment.mockMessages
 import dk.ufst.arch.redux_sample.domain.messages.MessagesAction
 import dk.ufst.arch.redux_sample.domain.messages.MessagesState
 
 @Composable
-fun MessagesScreen(globalStore: GlobalStore<AppState, AppAction, AppEnvironment>) {
+fun MessagesScreen(globalStore: GlobalStore<AppState, AppAction, AppEnvironment>, contactId: String) {
 
     val store: ComposeLocalStore<MessagesState, MessagesAction> = rememberLocalStore(
         globalStore,
     ) { it.messagesState.copy() }
 
     LaunchedEffect(true) {
-        store.send(MessagesAction.Init)
+        store.send(MessagesAction.LoadMessages(contactId))
     }
-
-    store.state.value.contact?.messages?.let {
-        MessageList(it)
+    if(store.state.value.isLoading) {
+        LoadingIndicator()
+    } else {
+        MessageList(store.state.value.messages)
     }
 }
 
@@ -89,5 +90,5 @@ fun MessageCard(msg: Message) {
 )
 @Composable
 fun MessageScreenPreview() {
-    MessageList(mockData[0].messages)
+    MessageList(mockMessages["1"]!!)
 }

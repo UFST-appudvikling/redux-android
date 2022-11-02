@@ -1,6 +1,5 @@
 package dk.ufst.arch.redux_sample.android
 
-import androidx.navigation.NavController
 import dk.ufst.arch.*
 import dk.ufst.arch.redux_sample.domain.contacts.ContactsEnvironment
 import dk.ufst.arch.redux_sample.domain.contacts.ContactsState
@@ -10,7 +9,6 @@ import dk.ufst.arch.redux_sample.domain.messages.MessagesState
 import dk.ufst.arch.redux_sample.domain.messages.messagesReducer
 import dk.ufst.arch.redux_sample.domain.environment.ApiClient
 import dk.ufst.arch.redux_sample.domain.environment.ApiClientMock
-import dk.ufst.arch.redux_sample.domain.environment.NavigationClient
 
 data class AppState(
     var contactsState: ContactsState = ContactsState(),
@@ -19,9 +17,8 @@ data class AppState(
 
 class AppEnvironment(
     val apiClient: ApiClient,
-    val navigationClient: NavigationClient,
-    val contacts: ContactsEnvironment = ContactsEnvironment(apiClient, navigationClient),
-    val messages: MessagesEnvironment = MessagesEnvironment(apiClient, navigationClient)
+    val contacts: ContactsEnvironment = ContactsEnvironment(apiClient),
+    val messages: MessagesEnvironment = MessagesEnvironment(apiClient)
 )
 
 object ReduxApp {
@@ -46,7 +43,7 @@ object ReduxApp {
     )
 
     private fun setupStore(env: AppEnvironment, appState: AppState) =
-        GlobalStore(
+        createGlobalStore(
             env = env,
             executor = ThreadExecutor(),
             reducer = compose(
@@ -58,10 +55,10 @@ object ReduxApp {
 
     // Call from app or activity, pass parameters if different setup is required based values found
     // in shared prefs for instance
-    fun init(navController: NavController) {
+    fun init() {
         if(!initialized) {
             ReduxAndroid.init(BuildConfig.DEBUG)
-            environment = AppEnvironment(ApiClientMock(), ComposeNavigationClient(navController))
+            environment = AppEnvironment(ApiClientMock())
             state = AppState()
             store = setupStore(environment, state)
             initialized = true
