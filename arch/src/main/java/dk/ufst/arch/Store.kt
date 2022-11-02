@@ -8,27 +8,24 @@ interface LocalStore<Value, Action> {
     fun send(action: Action)
 }
 
-interface GlobalStore2<Value, Action, Environment> {
+interface GlobalStore<Value, Action, Environment> {
     fun sendAction(action: Action)
     fun subscribe(subscriber: (Value) -> Unit)
     fun desubscribe(subscriber: (Value) -> Unit)
-    fun getSubcriberCount() : Int
+    val subscriberCount: Int
     val value: Value
 }
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
-open class GlobalStore<Value, Action, Environment>(
+internal class GlobalStoreImpl<Value, Action, Environment>(
     private val env : Environment,
     private val executor: Executor,
     initialValue : Value,
     private val copyValue: (Value) -> Value,
     private val reducer : ReducerFunc<Value, Action, Environment>
-): GlobalStore2<Value, Action, Environment> {
+): GlobalStore<Value, Action, Environment> {
     private val subscriberList: CopyOnWriteArrayList<(Value) -> Unit> = CopyOnWriteArrayList()
 
     override var value = initialValue
-        //protected set
-
 
     override fun sendAction(action: Action) {
         log("Dispatching action:")
@@ -47,7 +44,8 @@ open class GlobalStore<Value, Action, Environment>(
         subscriberList.remove(subscriber)
     }
 
-    override fun getSubcriberCount() : Int = subscriberList.size
+    override val subscriberCount: Int
+        get() = subscriberList.size
 
     private fun callSubscribers() {
         subscriberList.forEach { subscriber ->
@@ -70,8 +68,22 @@ open class GlobalStore<Value, Action, Environment>(
             }
         }
     }
+}
 
-    fun destroy() {}
+fun <Value, Action, Environment> createGlobalStore(
+    env : Environment,
+    executor: Executor = ThreadExecutor(),
+    initialValue : Value,
+    copyValue: (Value) -> Value,
+    reducer : ReducerFunc<Value, Action, Environment>): GlobalStore<Value, Action, Environment> {
+
+    return GlobalStoreImpl(
+        env = env,
+        executor = executor,
+        initialValue = initialValue,
+        copyValue = copyValue,
+        reducer = reducer
+    )
 }
 
 @Suppress("unused")

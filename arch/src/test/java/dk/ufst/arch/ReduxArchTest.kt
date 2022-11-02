@@ -110,7 +110,7 @@ internal abstract class ReduxArchTest {
 
     fun setupStore() {
         val state = AppState()
-        store = GlobalStore(
+        store = createGlobalStore(
             env = AppEnvironment(),
             reducer = compose(appReducer, ::highOrderReducer),
             initialValue = state,

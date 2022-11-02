@@ -121,12 +121,12 @@ class ComposeLocalStoreTest {
 
         composeTestRule.runOnIdle {
             // Make sure that only one subscription is created
-            assertEquals(1, globalStore.getSubcriberCount())
+            assertEquals(1, globalStore.subscriberCount)
         }
     }
 
     private fun setupStore() {
-        globalStore = GlobalStore(
+        globalStore = createGlobalStore(
             env = Any(),
             executor = TestExecutor(),
             initialValue = AppState(),
