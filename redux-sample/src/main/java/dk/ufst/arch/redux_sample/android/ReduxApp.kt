@@ -16,15 +16,15 @@ data class AppState(
 )
 
 class AppEnvironment(
-    val apiClient: ApiClient,
+    private val apiClient: ApiClient,
     val contacts: ContactsEnvironment = ContactsEnvironment(apiClient),
     val messages: MessagesEnvironment = MessagesEnvironment(apiClient)
 )
 
 object ReduxApp {
     lateinit var store : GlobalStore<AppState, AppAction, AppEnvironment>
-    lateinit var environment: AppEnvironment
-    lateinit var state: AppState
+    private lateinit var environment: AppEnvironment
+    private lateinit var state: AppState
     private var initialized = false
 
     private val appReducer = combine<AppState, AppAction, AppEnvironment>(

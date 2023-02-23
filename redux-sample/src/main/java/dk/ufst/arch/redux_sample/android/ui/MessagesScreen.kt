@@ -22,7 +22,6 @@ import dk.ufst.arch.redux_sample.R
 import dk.ufst.arch.redux_sample.android.AppEnvironment
 import dk.ufst.arch.redux_sample.android.AppState
 import dk.ufst.arch.redux_sample.domain.environment.Message
-import dk.ufst.arch.redux_sample.domain.environment.mockContacts
 import dk.ufst.arch.redux_sample.domain.environment.mockMessages
 import dk.ufst.arch.redux_sample.domain.messages.MessagesAction
 import dk.ufst.arch.redux_sample.domain.messages.MessagesState

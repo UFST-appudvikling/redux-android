@@ -2,7 +2,6 @@ package dk.ufst.arch.redux_sample.domain.messages
 
 import dk.ufst.arch.AppAction
 import dk.ufst.arch.Effect
-import dk.ufst.arch.redux_sample.domain.contacts.ContactsAction
 import dk.ufst.arch.redux_sample.domain.environment.*
 import dk.ufst.arch.singleEffect
 

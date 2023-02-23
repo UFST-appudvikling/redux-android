@@ -14,7 +14,7 @@ val mockContacts = listOf(
     Contact(id = "3", name = "Torstein Hancock", phone = "11111113")
 )
 
-val mockMessages = mapOf<String, List<Message>>(
+val mockMessages = mapOf(
     mockContacts[0].id to listOf(
         Message("message text 1"),
         Message("message text 2"),

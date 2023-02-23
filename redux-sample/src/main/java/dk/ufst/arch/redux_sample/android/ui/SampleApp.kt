@@ -23,9 +23,7 @@ import kotlinx.coroutines.launch
 class SampleAppState (
     val scaffoldState: ScaffoldState,
     val navController: NavHostController
-) {
-
-}
+)
 
 @Composable
 fun rememberSampleAppState(

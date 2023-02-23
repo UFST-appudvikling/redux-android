@@ -1,6 +1,5 @@
 package dk.ufst.arch.redux_sample.domain.contacts
 
-import android.util.Log
 import dk.ufst.arch.AppAction
 import dk.ufst.arch.Effect
 import dk.ufst.arch.SingleEvent
