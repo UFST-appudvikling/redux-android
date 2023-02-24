@@ -9,6 +9,8 @@ import dk.ufst.arch.redux_sample.domain.messages.MessagesState
 import dk.ufst.arch.redux_sample.domain.messages.messagesReducer
 import dk.ufst.arch.redux_sample.domain.environment.ApiClient
 import dk.ufst.arch.redux_sample.domain.environment.ApiClientMock
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 data class AppState(
     var contactsState: ContactsState = ContactsState(),
@@ -45,7 +47,7 @@ object ReduxApp {
     private fun setupStore(env: AppEnvironment, appState: AppState) =
         createGlobalStore(
             env = env,
-            executor = ThreadExecutor(),
+            defaultEffectScope = CoroutineScope(Dispatchers.Default),
             reducer = compose(
                 appReducer,
             ),

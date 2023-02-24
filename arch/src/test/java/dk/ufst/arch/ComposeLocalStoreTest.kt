@@ -3,6 +3,8 @@ package dk.ufst.arch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
@@ -16,6 +18,10 @@ import org.junit.runner.RunWith
 class ComposeLocalStoreTest {
     @get:Rule
     val composeTestRule = createComposeRule()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    private val testScope = CoroutineScope(Dispatchers.Main)
     private lateinit var globalStore: GlobalStore<AppState, Any, Any>
 
     @Before
@@ -128,7 +134,7 @@ class ComposeLocalStoreTest {
     private fun setupStore() {
         globalStore = createGlobalStore(
             env = Any(),
-            executor = TestExecutor(),
+            defaultEffectScope = testScope,
             initialValue = AppState(),
             copyValue = { appState ->
                 appState.copy()

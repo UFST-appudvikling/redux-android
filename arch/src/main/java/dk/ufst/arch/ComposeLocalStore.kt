@@ -5,6 +5,8 @@ import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 
 interface ComposeLocalStore<Value, Action> {
@@ -42,10 +44,10 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
         object : ComposeLocalStore<LocalValue, LocalAction> {
             override fun send(action: LocalAction) {
                 if (action is GlobalAction) {
-                    globalStore.sendAction(action as GlobalAction)
+                    globalStore.sendAction(action as GlobalAction, scope)
                 }
             }
-
+            private val scope = CoroutineScope(Dispatchers.Default)
             override val state: State<LocalValue> = state
         }
     }

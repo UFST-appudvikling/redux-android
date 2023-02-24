@@ -1,5 +1,9 @@
 package dk.ufst.arch
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import org.junit.Rule
+
 /**
  * App state with 2 substates, 2 reducers and a highorder reducer for testing
  */
@@ -92,6 +96,10 @@ internal fun highOrderReducer(reducer: ReducerFunc<AppState, AppAction, AppEnvir
  */
 @Suppress("RemoveExplicitTypeArguments") // suppressed because it will not compile if you remove the types
 internal abstract class ReduxArchTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+    val testScope = CoroutineScope(Dispatchers.Main)
+
     private val appReducer = combine(
         pullback<AppState, Test1State, AppAction, Test1Action, AppEnvironment, Test1Environment>(::reducer1,
             AppState::test1State::get,
@@ -112,10 +120,10 @@ internal abstract class ReduxArchTest {
         val state = AppState()
         store = createGlobalStore(
             env = AppEnvironment(),
+            defaultEffectScope = testScope,
             reducer = compose(appReducer, ::highOrderReducer),
             initialValue = state,
             copyValue = { state.copy() },
-            executor = TestExecutor()
         )
     }
 
