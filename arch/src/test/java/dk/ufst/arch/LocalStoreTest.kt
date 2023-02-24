@@ -19,7 +19,7 @@ internal class LocalStoreTest : ReduxArchTest() {
     @Test
     fun `Test that we can create a local store and receive updates from it`() {
         var subscriberHasRun = false
-        localStore.subscribe { _ ->
+        localStore.subscribe {
             subscriberHasRun = true
         }
         localStore.send(Test1Action.TestAction)
