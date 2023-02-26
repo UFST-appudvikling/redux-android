@@ -4,11 +4,28 @@ package dk.ufst.arch
 
 typealias Effect<Action> = ()->Action?
 typealias ReducerFunc<Value, Action, Environment> = (Value, Action, Environment) -> Array<Effect<Action>>
+typealias Effects<Action> = Array<Effect<Action>>
+
+class ReducerBuilder <Action> {
+    internal var effects: MutableList<Effect<Action>> = mutableListOf()
+    fun effect(fx: Effect<Action>) {
+        effects.add(fx)
+    }
+}
+
+fun <Action> reducer(reducerBuilder: ReducerBuilder<Action>.() -> Unit) : Effects<Action> {
+    val builder = ReducerBuilder<Action>().apply(reducerBuilder)
+    return builder.effects.toTypedArray()
+}
+
 
 /**
  * Helper function to reduce clutter when you only want to run a single effect
  * from a reducer
  */
+@Deprecated("Use the reducer builder function and effect() instead",
+    ReplaceWith("effect")
+)
 fun <Action> singleEffect(result : ()->Action) : Array<Effect<Action>> {
     return arrayOf(
         effect@{

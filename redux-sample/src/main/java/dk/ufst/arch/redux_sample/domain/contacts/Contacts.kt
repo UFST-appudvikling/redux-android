@@ -1,10 +1,10 @@
 package dk.ufst.arch.redux_sample.domain.contacts
 
 import dk.ufst.arch.AppAction
-import dk.ufst.arch.Effect
 import dk.ufst.arch.SingleEvent
-import dk.ufst.arch.redux_sample.domain.environment.*
-import dk.ufst.arch.singleEffect
+import dk.ufst.arch.reducer
+import dk.ufst.arch.redux_sample.domain.environment.ApiClient
+import dk.ufst.arch.redux_sample.domain.environment.Contact
 
 data class ContactsState(
     var contacts: List<Contact> = emptyList(),
@@ -32,11 +32,11 @@ fun contactsReducer(
     state: ContactsState,
     action: ContactsAction,
     env: ContactsEnvironment
-): Array<Effect<ContactsAction>> {
+) = reducer {
     when(action) {
         is ContactsAction.LoadContacts -> {
             state.isLoading = true
-            return singleEffect {
+            effect {
                 env.apiClient.getContacts().fold(
                     onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
                     onFailure = { ex -> ContactsAction.OnError(ex) })
@@ -56,5 +56,4 @@ fun contactsReducer(
             }
         }
     }
-    return emptyArray()
 }

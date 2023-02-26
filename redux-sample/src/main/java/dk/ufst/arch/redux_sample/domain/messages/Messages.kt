@@ -1,9 +1,9 @@
 package dk.ufst.arch.redux_sample.domain.messages
 
 import dk.ufst.arch.AppAction
-import dk.ufst.arch.Effect
-import dk.ufst.arch.redux_sample.domain.environment.*
-import dk.ufst.arch.singleEffect
+import dk.ufst.arch.reducer
+import dk.ufst.arch.redux_sample.domain.environment.ApiClient
+import dk.ufst.arch.redux_sample.domain.environment.Message
 
 data class MessagesState(
     var messages: List<Message> = emptyList(),
@@ -24,11 +24,11 @@ fun messagesReducer(
     state: MessagesState,
     action: MessagesAction,
     env: MessagesEnvironment
-): Array<Effect<MessagesAction>> {
+) = reducer {
     when(action) {
         is MessagesAction.LoadMessages -> {
             state.isLoading = true
-            return singleEffect {
+            effect {
                 env.apiClient.getMessages(action.contactId).fold(
                     onSuccess = { messages -> MessagesAction.MessagesLoaded(messages) },
                     onFailure = { ex -> MessagesAction.OnError(ex) })
@@ -40,5 +40,4 @@ fun messagesReducer(
         }
         is MessagesAction.OnError -> TODO()
     }
-    return emptyArray()
 }
