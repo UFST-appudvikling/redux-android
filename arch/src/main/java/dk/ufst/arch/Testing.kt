@@ -46,8 +46,6 @@ class TestStore<Value, Action, Environment>(
     var value = initialValue
         private set
 
-    private val executor: Executor = TestExecutor()
-
     private val pendingActions = mutableListOf<Action>()
 
     fun sendAction(action: Action) {
@@ -61,13 +59,10 @@ class TestStore<Value, Action, Environment>(
         // if given a function, run assert callback before we run the effects
         assert?.invoke(value)
         effects.forEach { effect ->
-            // run effect on thread pool
-            executor.execute {
-                val act = effect()
-                act?.let {
-                    pendingActions.add(it)
-                    sendAction(it) // send resulting action on main thread
-                }
+            val act = effect()
+            act?.let {
+                pendingActions.add(it)
+                sendAction(it) // send resulting action on main thread
             }
         }
     }

@@ -5,7 +5,6 @@ import org.junit.Assert.*
 import org.junit.Before
 
 internal class GlobalStoreTest : ReduxArchTest() {
-
     @Before
     fun setup() {
         setupStore()
@@ -43,7 +42,7 @@ internal class GlobalStoreTest : ReduxArchTest() {
     fun `Test that effects are run`() {
         // TestAction runs an effect which emit Test2Action.TestAction2 which in turn updates
         // Test2State.test2
-        store.sendAction(Test2Action.TestAction)
+        store.sendAction(Test2Action.TestAction, testScope)
         assertTrue(store.value.test2State.test2)
     }
 

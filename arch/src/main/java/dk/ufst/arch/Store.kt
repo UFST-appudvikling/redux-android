@@ -1,5 +1,8 @@
 package dk.ufst.arch
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.CopyOnWriteArrayList
 
 interface LocalStore<Value, Action> {
@@ -9,30 +12,34 @@ interface LocalStore<Value, Action> {
 }
 
 interface GlobalStore<Value, Action, Environment> {
-    fun sendAction(action: Action)
+    fun sendAction(action: Action, effectScope: CoroutineScope? = null)
     fun subscribe(subscriber: (Value) -> Unit)
     fun desubscribe(subscriber: (Value) -> Unit)
     val subscriberCount: Int
     val value: Value
 }
 
+// Default effect coroutine scope (process lifecycle)
+//internal val defaultEffectScope = CoroutineScope(Dispatchers.Default)
+
 internal class GlobalStoreImpl<Value, Action, Environment>(
     private val env : Environment,
-    private val executor: Executor,
+    private val defaultEffectScope: CoroutineScope,
     initialValue : Value,
     private val copyValue: (Value) -> Value,
     private val reducer : ReducerFunc<Value, Action, Environment>
 ): GlobalStore<Value, Action, Environment> {
     private val subscriberList: CopyOnWriteArrayList<(Value) -> Unit> = CopyOnWriteArrayList()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override var value = initialValue
 
-    override fun sendAction(action: Action) {
+    override fun sendAction(action: Action, effectScope: CoroutineScope?) {
         log("Dispatching action:")
         log("\t${getActionDescription(action as Any)}")
         // run on main thread
-        executor.runOnUiThread {
-            reduce(action, value)
+        mainScope.launch {
+            reduce(action, value, effectScope ?: defaultEffectScope)
         }
     }
 
@@ -53,14 +60,14 @@ internal class GlobalStoreImpl<Value, Action, Environment>(
         }
     }
 
-    private fun reduce(action: Action, currentValue: Value) {
+    private fun reduce(action: Action, currentValue: Value, effectScope: CoroutineScope) {
         val newValue = copyValue(currentValue)
         val effects = reducer(newValue, action, env)
         value = newValue
         callSubscribers()
         effects.forEach { effect ->
             // run effect on thread pool
-            executor.execute {
+            effectScope.launch {
                 val act = effect()
                 act?.let {
                     sendAction(it) // send resulting action on main thread
@@ -72,14 +79,14 @@ internal class GlobalStoreImpl<Value, Action, Environment>(
 
 fun <Value, Action, Environment> createGlobalStore(
     env : Environment,
-    executor: Executor = ThreadExecutor(),
+    defaultEffectScope: CoroutineScope,
     initialValue : Value,
     copyValue: (Value) -> Value,
     reducer : ReducerFunc<Value, Action, Environment>): GlobalStore<Value, Action, Environment> {
 
     return GlobalStoreImpl(
         env = env,
-        executor = executor,
+        defaultEffectScope = defaultEffectScope,
         initialValue = initialValue,
         copyValue = copyValue,
         reducer = reducer
@@ -89,6 +96,7 @@ fun <Value, Action, Environment> createGlobalStore(
 @Suppress("unused")
 inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEnvironment> createLocalStore(
     globalStore: GlobalStore<GlobalValue, GlobalAction, GlobalEnvironment>,
+    effectScope: CoroutineScope? = null,
     crossinline getLocalCopy : (GlobalValue)->LocalValue,
 ) : LocalStore<LocalValue, LocalAction> {
     return object : LocalStore<LocalValue, LocalAction> {
@@ -128,9 +136,12 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
 
         override fun send(action: LocalAction) {
             if(action is GlobalAction) {
-                globalStore.sendAction(action as GlobalAction)
+                if(effectScope != null) {
+                    globalStore.sendAction(action as GlobalAction, effectScope)
+                } else {
+                    globalStore.sendAction(action as GlobalAction)
+                }
             }
-
         }
     }
 }
