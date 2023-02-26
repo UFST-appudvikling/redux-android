@@ -29,16 +29,6 @@ internal class GlobalStoreTest : ReduxArchTest() {
     }
 
     @Test
-    fun `Test singleEffect helper`() {
-        // Run the simple effect helper with takes a function that takes no arguments and returns
-        // an action and converts it to an Array of functions that return an action.
-        // bit dumb since we are testing arrayOf() :D
-        val actions = singleEffect<Test2Action> { Test2Action.TestAction }
-        // verify its the same action
-        assertTrue(actions.any { it.invoke() is Test2Action.TestAction })
-    }
-
-    @Test
     fun `Test that effects are run`() {
         // TestAction runs an effect which emit Test2Action.TestAction2 which in turn updates
         // Test2State.test2

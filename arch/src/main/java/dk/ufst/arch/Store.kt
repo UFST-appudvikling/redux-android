@@ -68,7 +68,7 @@ internal class GlobalStoreImpl<Value, Action, Environment>(
         effects.forEach { effect ->
             // run effect on thread pool
             effectScope.launch {
-                val act = effect()
+                val act = effect.invoke(this)
                 act?.let {
                     sendAction(it) // send resulting action on main thread
                 }

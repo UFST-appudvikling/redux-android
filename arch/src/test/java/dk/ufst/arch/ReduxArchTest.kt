@@ -33,11 +33,10 @@ internal fun reducer1(
     state: Test1State,
     action: Test1Action,
     env: Test1Environment
-): Array<Effect<Test1Action>> {
+) = reducer<Test1Action> {
     when(action) {
         is Test1Action.TestAction -> state.test = true
     }
-    return emptyArray()
 }
 
 internal data class Test2State(
@@ -57,17 +56,18 @@ internal fun reducer2(
     state: Test2State,
     action: Test2Action,
     env: Test2Environment
-): Array<Effect<Test2Action>> {
+) = reducer<Test2Action> {
     when(action) {
         is Test2Action.TestAction -> {
             state.test = true
-            return singleEffect { Test2Action.TestAction2 }
+            effect {
+                Test2Action.TestAction2
+            }
         }
         Test2Action.TestAction2 -> {
             state.test2 = true
         }
     }
-    return emptyArray()
 }
 
 /**

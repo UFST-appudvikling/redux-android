@@ -2,6 +2,9 @@
 
 package dk.ufst.arch
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.Assert.fail
 
 
@@ -42,7 +45,7 @@ class TestStore<Value, Action, Environment>(
     val copyValue: (Value) -> Value,
     val reducer : ReducerFunc<Value, Action, Environment>
 ) {
-
+    val testScope = CoroutineScope(Dispatchers.Unconfined)
     var value = initialValue
         private set
 
@@ -59,10 +62,12 @@ class TestStore<Value, Action, Environment>(
         // if given a function, run assert callback before we run the effects
         assert?.invoke(value)
         effects.forEach { effect ->
-            val act = effect()
-            act?.let {
-                pendingActions.add(it)
-                sendAction(it) // send resulting action on main thread
+            testScope.launch {
+                val act = effect.invoke(this)
+                act?.let {
+                    pendingActions.add(it)
+                    sendAction(it) // send resulting action on main thread
+                }
             }
         }
     }
