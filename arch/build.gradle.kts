@@ -51,7 +51,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.2"
+        kotlinCompilerExtensionVersion = "1.1.1"
     }
     testOptions {
         unitTests {
@@ -61,13 +61,14 @@ android {
     namespace = "dk.ufst.arch"
 }
 
-val kotlinVersion = "1.8.10"
+val kotlinVersion = "1.6.10"
 val archCoreVersion = "2.2.0"
 val lifecycleVersion = "2.5.1"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    implementation("androidx.core:core-ktx:1.8.0")
     val composeBom = platform("androidx.compose:compose-bom:2023.01.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)

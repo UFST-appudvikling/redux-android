@@ -24,7 +24,7 @@ fun messagesReducer(
     state: MessagesState,
     action: MessagesAction,
     env: MessagesEnvironment
-) = reducer {
+) = reducer<MessagesAction> {
     when(action) {
         is MessagesAction.LoadMessages -> {
             state.isLoading = true

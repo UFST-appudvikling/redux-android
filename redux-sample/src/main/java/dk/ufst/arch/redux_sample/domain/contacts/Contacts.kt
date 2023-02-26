@@ -32,7 +32,7 @@ fun contactsReducer(
     state: ContactsState,
     action: ContactsAction,
     env: ContactsEnvironment
-) = reducer {
+) = reducer<ContactsAction> {
     when(action) {
         is ContactsAction.LoadContacts -> {
             state.isLoading = true
