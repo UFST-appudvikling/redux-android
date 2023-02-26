@@ -2,8 +2,6 @@
 
 package dk.ufst.arch
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.fail
 
 

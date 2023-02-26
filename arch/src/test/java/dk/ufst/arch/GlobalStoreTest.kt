@@ -3,7 +3,6 @@ package dk.ufst.arch
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Rule
 
 internal class GlobalStoreTest : ReduxArchTest() {
     @Before
