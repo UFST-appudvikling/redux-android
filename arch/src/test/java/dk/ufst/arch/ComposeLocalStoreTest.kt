@@ -1,14 +1,21 @@
 package dk.ufst.arch
 
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -131,6 +138,43 @@ class ComposeLocalStoreTest {
         }
     }
 
+    @Test
+    fun `Test that effects are cancelled when leaving composition`() {
+        effectCancelled = false
+        // Signal an action sent from the Compose scope to the reducer.
+        val signalAction = Channel<Unit>(1)
+
+        val state = mutableStateOf(0)
+
+        composeTestRule.setContent {
+            println("Compositing")
+            if(state.value == 0) {
+                val localStore: ComposeLocalStore<LocalState, Any> = rememberLocalStore(
+                    globalStore
+                ) { it.localState.copy() }
+
+                val scope = rememberCoroutineScope()
+                // Wait for outside signal for when to sent an Action.
+                scope.launch {
+                    signalAction.consumeEach {
+                        localStore.send(Any())
+                        println("sending action")
+                    }
+                }
+            }
+        }
+        composeTestRule.runOnIdle {
+            signalAction.trySend(Unit)
+            state.value = 1
+        }
+
+        composeTestRule.runOnIdle {
+            println("effectCancelled: $effectCancelled")
+            assertTrue(effectCancelled)
+        }
+
+    }
+
     private fun setupStore() {
         globalStore = createGlobalStore(
             env = Any(),
@@ -145,6 +189,11 @@ class ComposeLocalStoreTest {
                         localReducer,
                         AppState::localState::get,
                         AppState::localState::set
+                    ) { Any() },
+                    pullback(
+                        ::localReducer2,
+                        AppState::localState::get,
+                        AppState::localState::set
                     ) { Any() }
                 )
             )
@@ -154,6 +203,23 @@ class ComposeLocalStoreTest {
     companion object {
         private data class LocalState(var value: Int = 1)
         private data class AppState(var localState: LocalState = LocalState())
+
+        var effectCancelled: Boolean = false
+
+        private fun localReducer2(state: LocalState, action: Any, env: Any ) = reducer<Any> {
+            effect {
+                try {
+                    repeat(800) {
+                        println("coroutine running")
+                        delay(1000L)
+                    }
+                } catch (t: CancellationException) {
+                    effectCancelled = true
+                    println("coroutine cancelled!!!")
+                }
+                null
+            }
+        }
 
         private val localReducer: ReducerFunc<LocalState, Any, Any> = { localValue, _, _ ->
             localValue.value = 2
