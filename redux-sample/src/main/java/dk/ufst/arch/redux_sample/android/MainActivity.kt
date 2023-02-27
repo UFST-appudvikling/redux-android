@@ -7,7 +7,6 @@ import dk.ufst.arch.redux_sample.android.ui.SampleApp
 import dk.ufst.arch.redux_sample.android.ui.rememberSampleAppState
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
