@@ -5,9 +5,8 @@ import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import kotlinx.coroutines.CoroutineScope
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.Dispatchers
-
 
 interface ComposeLocalStore<Value, Action> {
     val state: State<Value>
@@ -23,7 +22,6 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
 
     val state = produceState(getLocalCopy(globalStore.value)) {
         val stateChanger: ((GlobalValue) -> Unit) = { globalValue: GlobalValue ->
-
             val newLocalValue = getLocalCopy(globalValue)
             // Only update value if the local state have changed.
             if (prevLocalValue != newLocalValue) {
@@ -40,14 +38,14 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
         }
     }
 
-    val localStore = remember {
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    val localStore: ComposeLocalStore<LocalValue, LocalAction> = remember {
         object : ComposeLocalStore<LocalValue, LocalAction> {
             override fun send(action: LocalAction) {
                 if (action is GlobalAction) {
                     globalStore.sendAction(action as GlobalAction, scope)
                 }
             }
-            private val scope = CoroutineScope(Dispatchers.Default)
             override val state: State<LocalValue> = state
         }
     }

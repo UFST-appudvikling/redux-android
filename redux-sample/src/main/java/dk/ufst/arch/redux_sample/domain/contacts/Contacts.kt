@@ -5,8 +5,8 @@ import dk.ufst.arch.SingleEvent
 import dk.ufst.arch.reducer
 import dk.ufst.arch.redux_sample.domain.environment.ApiClient
 import dk.ufst.arch.redux_sample.domain.environment.Contact
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 data class ContactsState(
     var contacts: List<Contact> = emptyList(),
@@ -39,6 +39,17 @@ fun contactsReducer(
         is ContactsAction.LoadContacts -> {
             state.isLoading = true
             effect {
+                try {
+                    repeat(800) {
+                        println("LoadContacts")
+                        delay(1000L)
+                    }
+                } catch (t: CancellationException) {
+                    println("LoadContacts coroutine cancelled!!!")
+                }
+                null
+            }
+            effect {
                 env.apiClient.getContacts().fold(
                     onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
                     onFailure = { ex -> ContactsAction.OnError(ex) })
@@ -47,23 +58,20 @@ fun contactsReducer(
         is ContactsAction.ContactsLoaded -> {
             state.isLoading = false
             state.contacts = action.contacts
-            // An effect is a normal coroutine
+
             effect {
-                launch {
-                    delay(2000L)
-                    println("World 2")
+                try {
+                    repeat(800) {
+                        println("ContactsLoaded")
+                        delay(1000L)
+                    }
+                } catch (t: CancellationException) {
+                    println("ContactsLoaded coroutine cancelled!!!")
                 }
-                launch {
-                    delay(1000L)
-                    println("World 1")
-                }
-                println("Hello")
                 null
             }
         }
-        is ContactsAction.ContactTapped -> {
-            //return env.navigationClient.navigateFx(NavigationDestination.Messages, NavigationArg.MessagesArg(action.contact))
-        }
+        is ContactsAction.ContactTapped -> {}
         is ContactsAction.OnError -> {
             // communicate the error back to the UI by updating the state
             action.ex.message?.let {

@@ -70,7 +70,7 @@ internal class GlobalStoreImpl<Value, Action, Environment>(
             effectScope.launch {
                 val act = effect.invoke(this)
                 act?.let {
-                    sendAction(it) // send resulting action on main thread
+                    sendAction(it, effectScope) // send resulting action on main thread
                 }
             }
         }
