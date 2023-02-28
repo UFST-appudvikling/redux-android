@@ -20,6 +20,17 @@ fun <Action> reducer(reducerBuilder: ReducerBuilder<Action>.() -> Unit) : Effect
     return builder.effects.toTypedArray()
 }
 
+inline fun <reified T, Value, Action, Environment> subReducer(
+    crossinline reducer: (Value, T, Environment) -> Effects<Action>
+): ReducerFunc<Value, Action, Environment> {
+    return inner@{ value, action, env ->
+        if(action is T) {
+            return@inner reducer(value, action, env)
+        }
+        emptyArray()
+    }
+}
+
 /**
  * Combines several reducers into one
  */
