@@ -1,7 +1,9 @@
 package dk.ufst.arch
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -18,9 +20,6 @@ interface GlobalStore<Value, Action, Environment> {
     val subscriberCount: Int
     val value: Value
 }
-
-// Default effect coroutine scope (process lifecycle)
-//internal val defaultEffectScope = CoroutineScope(Dispatchers.Default)
 
 internal class GlobalStoreImpl<Value, Action, Environment>(
     private val env : Environment,
@@ -96,12 +95,13 @@ fun <Value, Action, Environment> createGlobalStore(
 @Suppress("unused")
 inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEnvironment> createLocalStore(
     globalStore: GlobalStore<GlobalValue, GlobalAction, GlobalEnvironment>,
-    effectScope: CoroutineScope? = null,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
     crossinline getLocalCopy : (GlobalValue)->LocalValue,
 ) : LocalStore<LocalValue, LocalAction> {
     return object : LocalStore<LocalValue, LocalAction> {
 
         private var globalSubscriber : ((GlobalValue) -> Unit)? = null
+        private val effectScope: CoroutineScope = CoroutineScope(dispatcher)
 
         override fun subscribe(subscriber: (LocalValue) -> Unit) {
             var prevLocalValue : LocalValue? = null
@@ -128,6 +128,7 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
         }
 
         override fun desubscribe(subscriber: (LocalValue) -> Unit) {
+            effectScope.cancel()
             globalSubscriber?.let {
                 globalStore.desubscribe(it)
             }
@@ -136,11 +137,7 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
 
         override fun send(action: LocalAction) {
             if(action is GlobalAction) {
-                if(effectScope != null) {
-                    globalStore.sendAction(action as GlobalAction, effectScope)
-                } else {
-                    globalStore.sendAction(action as GlobalAction)
-                }
+                globalStore.sendAction(action as GlobalAction, effectScope)
             }
         }
     }
