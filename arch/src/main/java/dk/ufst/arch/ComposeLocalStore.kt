@@ -17,7 +17,7 @@ interface ComposeLocalStore<Value, Action> {
 @Composable
 inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEnvironment> rememberLocalStore(
     globalStore: GlobalStore<GlobalValue, GlobalAction, GlobalEnvironment>,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
     crossinline getLocalCopy: @DisallowComposableCalls (GlobalValue) -> LocalValue
 ): ComposeLocalStore<LocalValue, LocalAction> {
     var prevLocalValue: LocalValue = remember { getLocalCopy(globalStore.value) }
