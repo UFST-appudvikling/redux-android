@@ -39,17 +39,6 @@ fun contactsReducer(
         is ContactsAction.LoadContacts -> {
             state.isLoading = true
             effect {
-                try {
-                    repeat(800) {
-                        println("LoadContacts")
-                        delay(1000L)
-                    }
-                } catch (t: CancellationException) {
-                    println("LoadContacts coroutine cancelled!!!")
-                }
-                null
-            }
-            effect {
                 env.apiClient.getContacts().fold(
                     onSuccess = { contacts -> ContactsAction.ContactsLoaded(contacts) },
                     onFailure = { ex -> ContactsAction.OnError(ex) })
@@ -58,18 +47,6 @@ fun contactsReducer(
         is ContactsAction.ContactsLoaded -> {
             state.isLoading = false
             state.contacts = action.contacts
-
-            effect {
-                try {
-                    repeat(800) {
-                        println("ContactsLoaded")
-                        delay(1000L)
-                    }
-                } catch (t: CancellationException) {
-                    println("ContactsLoaded coroutine cancelled!!!")
-                }
-                null
-            }
         }
         is ContactsAction.ContactTapped -> {}
         is ContactsAction.OnError -> {

@@ -17,7 +17,7 @@ android {
         buildConfigField(
             "String",
             "REDUX_ANDROID_VERSION",
-            "\"1.1.0\""
+            "\"1.1.6\""
         )
     }
 

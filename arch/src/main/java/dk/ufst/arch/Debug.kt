@@ -81,7 +81,7 @@ fun logStateDiff(state1: Any, state2: Any) {
     }
 }
 
-fun formatValue(value: Any?) : String =
+private fun formatValue(value: Any?) : String =
     when(value) {
         is String -> "\"$value\""
         else -> "$value"

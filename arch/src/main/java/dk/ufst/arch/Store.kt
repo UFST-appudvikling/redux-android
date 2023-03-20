@@ -96,21 +96,20 @@ fun <Value, Action, Environment> createGlobalStore(
 inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEnvironment> createLocalStore(
     globalStore: GlobalStore<GlobalValue, GlobalAction, GlobalEnvironment>,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    scope: CoroutineScope? = null,
     crossinline getLocalCopy : (GlobalValue)->LocalValue,
 ) : LocalStore<LocalValue, LocalAction> {
     return object : LocalStore<LocalValue, LocalAction> {
 
         private var globalSubscriber : ((GlobalValue) -> Unit)? = null
-        private val effectScope: CoroutineScope = CoroutineScope(dispatcher)
+        private var effectScope: CoroutineScope = CoroutineScope(dispatcher)
 
         override fun subscribe(subscriber: (LocalValue) -> Unit) {
             var prevLocalValue : LocalValue? = null
 
             globalSubscriber?.let { throw IllegalStateException("LocalStore must only be subscribed to once") }
             globalSubscriber = { globalValue: GlobalValue ->
-
                 val newLocalValue = getLocalCopy(globalValue)
-
                 // inform the subscriber only if the local state have changed
                 if(prevLocalValue != newLocalValue) {
                     if(BuildConfig.DEBUG) {
@@ -128,16 +127,17 @@ inline fun <LocalValue, LocalAction, GlobalValue, reified GlobalAction, GlobalEn
         }
 
         override fun desubscribe(subscriber: (LocalValue) -> Unit) {
-            effectScope.cancel()
             globalSubscriber?.let {
                 globalStore.desubscribe(it)
             }
             globalSubscriber = null
+            effectScope.cancel()
+            effectScope = CoroutineScope(dispatcher)
         }
 
         override fun send(action: LocalAction) {
             if(action is GlobalAction) {
-                globalStore.sendAction(action as GlobalAction, effectScope)
+                globalStore.sendAction(action as GlobalAction, scope ?: effectScope)
             }
         }
     }
