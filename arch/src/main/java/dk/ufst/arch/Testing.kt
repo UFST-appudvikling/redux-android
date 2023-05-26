@@ -2,6 +2,7 @@
 
 package dk.ufst.arch
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,9 +44,10 @@ class TestStore<Value, Action, Environment>(
     val env : Environment,
     initialValue : Value,
     val copyValue: (Value) -> Value,
-    val reducer : ReducerFunc<Value, Action, Environment>
+    val reducer : ReducerFunc<Value, Action, Environment>,
+    dispatcher: CoroutineDispatcher
 ) {
-    val testScope = CoroutineScope(Dispatchers.Unconfined)
+    val testScope = CoroutineScope(dispatcher)
     var value = initialValue
         private set
 

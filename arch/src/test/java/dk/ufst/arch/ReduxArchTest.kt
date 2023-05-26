@@ -2,6 +2,8 @@ package dk.ufst.arch
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 
 /**
@@ -94,11 +96,12 @@ internal fun highOrderReducer(reducer: ReducerFunc<AppState, AppAction, AppEnvir
  * Convenient base class to cut down on the copy pasting. Has function for setting up a regular
  * GlobalStore or a TestStore and an AppReducer suitable for testing
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("RemoveExplicitTypeArguments") // suppressed because it will not compile if you remove the types
 internal abstract class ReduxArchTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
-    val testScope = CoroutineScope(Dispatchers.Main)
+    val testScope = CoroutineScope(mainDispatcherRule.testDispatcher)
 
     private val appReducer = combine(
         pullback<AppState, Test1State, AppAction, Test1Action, AppEnvironment, Test1Environment>(::reducer1,
@@ -133,7 +136,8 @@ internal abstract class ReduxArchTest {
             env = AppEnvironment(),
             reducer = compose(appReducer, ::highOrderReducer),
             initialValue = state,
-            copyValue = { state.copy() }
+            copyValue = { state.copy() },
+            dispatcher = mainDispatcherRule.testDispatcher,
         )
     }
 }
